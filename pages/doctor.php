@@ -244,7 +244,7 @@ include __DIR__ . '/../includes/header.php';
                         </td>
                         <td>
                             <div style="display:flex;align-items:center;gap:8px">
-                                <div class="avatar sm" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)"><?= sanitize($t['nurse_initials']) ?></div>
+                                <?= userAvatar($t['nurse_image'] ?? null, 'sm') ?>
                                 <?= sanitize($t['nurse_name']) ?>
                             </div>
                         </td>
@@ -277,7 +277,7 @@ include __DIR__ . '/../includes/header.php';
                 $s2->execute([$n['id']]); $pendCount = $s2->fetchColumn();
             ?>
             <div class="activity-item">
-                <div class="avatar sm" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)"><?= sanitize($n['avatar_initials']) ?></div>
+                <?= userAvatar($n['profile_image'] ?? null, 'sm') ?>
                 <div class="activity-body">
                     <div class="activity-title"><?= sanitize($n['name']) ?></div>
                     <div class="activity-detail"><?= sanitize($n['department'] ?? '—') ?></div>
@@ -307,7 +307,7 @@ include __DIR__ . '/../includes/header.php';
     ?>
     <div class="card" style="padding:0">
         <div style="padding:20px;border-bottom:1px solid var(--border);display:flex;gap:14px;align-items:center">
-            <div class="avatar lg" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)"><?= sanitize($n['avatar_initials']) ?></div>
+            <?= userAvatar($n['profile_image'] ?? null, 'lg') ?>
             <div style="flex:1">
                 <div style="font-weight:600;color:var(--text-primary)"><?= sanitize($n['name']) ?></div>
                 <div style="font-size:.78rem;color:var(--text-muted)"><?= sanitize($n['email']) ?></div>
@@ -448,7 +448,7 @@ include __DIR__ . '/../includes/header.php';
     <div style="display:flex;flex-direction:column;gap:16px">
         <div class="card">
             <div class="card-body" style="text-align:center;padding:28px 20px">
-                <div class="avatar lg" style="background:linear-gradient(135deg,#2dd4bf,#0d9488);margin:0 auto 14px"><?= sanitize($viewNurse['avatar_initials']) ?></div>
+                <?= userAvatar($viewNurse['profile_image'] ?? null, 'lg', 'margin:0 auto 14px') ?>
                 <div style="font-weight:700;color:var(--text-primary);font-size:1rem"><?= sanitize($viewNurse['name']) ?></div>
                 <div style="font-size:.78rem;color:var(--text-muted);margin-top:4px"><?= sanitize($viewNurse['email']) ?></div>
                 <div style="font-size:.75rem;color:var(--accent-teal);margin-top:4px"><?= sanitize($viewNurse['department'] ?? '') ?></div>
@@ -561,7 +561,7 @@ include __DIR__ . '/../includes/header.php';
                     </td>
                     <td>
                         <div style="display:flex;align-items:center;gap:8px">
-                            <div class="avatar sm" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)"><?= sanitize($t['nurse_initials']) ?></div>
+                            <?= userAvatar($t['nurse_image'] ?? null, 'sm') ?>
                             <?= sanitize($t['nurse_name']) ?>
                         </div>
                     </td>
@@ -643,7 +643,7 @@ include __DIR__ . '/../includes/header.php';
 <div style="display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start">
     <div class="card">
         <div class="card-body" style="text-align:center;padding:32px 20px">
-            <img src="../assets/profile.png" alt="Profile" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid rgba(99,135,255,0.4);margin-bottom:16px">
+            <img src="<?= avatarSrc($user['profile_image'] ?? null) ?>" alt="Profile" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--accent-a50);margin-bottom:16px">
             <div style="font-weight:700;color:var(--text-primary);font-size:1rem"><?= sanitize($user['name']) ?></div>
             <div style="font-size:.8rem;color:var(--accent-blue-g);margin-top:4px"><?= sanitize($user['specialty'] ?? 'Doctor Admin') ?></div>
             <div style="font-size:.75rem;color:var(--text-muted)"><?= sanitize($user['department'] ?? '') ?></div>

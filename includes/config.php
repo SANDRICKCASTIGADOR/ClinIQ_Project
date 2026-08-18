@@ -10,7 +10,7 @@ define('DB_NAME', 'hospital_tms');
 define('DB_CHARSET', 'utf8mb4');
 
 // System Configuration
-define('SITE_NAME', 'MediTrack');
+define('SITE_NAME', 'ClinIQ');
 define('SITE_TAGLINE', 'Hospital OS');
 define('SESSION_TIMEOUT', 3600); // 1 hour in seconds
 

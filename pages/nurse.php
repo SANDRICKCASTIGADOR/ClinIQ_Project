@@ -154,7 +154,7 @@ include __DIR__ . '/../includes/header.php';
             <div class="card-header"><span class="card-title">My Supervising Doctor</span></div>
             <div class="card-body">
                 <div class="flex align-center gap-12" style="margin-bottom:14px">
-                    <div class="avatar lg"><?= getInitials($myDoctor['name']) ?></div>
+                    <?= userAvatar($myDoctor['profile_image'] ?? null, 'lg') ?>
                     <div>
                         <div style="font-weight:600;color:var(--text-primary)"><?= sanitize($myDoctor['name']) ?></div>
                         <div style="font-size:.78rem;color:var(--accent-blue-g)"><?= sanitize($myDoctor['specialty'] ?? '') ?></div>

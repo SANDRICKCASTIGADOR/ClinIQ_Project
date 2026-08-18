@@ -42,17 +42,32 @@ $roleLabel = match($role) {
 };
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
+    <script>
+    // Theme: apply saved choice before first paint so there's no flash
+    (function () {
+        var t = localStorage.getItem('cliniq-theme');
+        if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+    })();
+    function toggleTheme() {
+        var el = document.documentElement;
+        var next = el.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        el.setAttribute('data-theme', next);
+        localStorage.setItem('cliniq-theme', next);
+    }
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= sanitize($pageTitle ?? 'Dashboard') ?> — MediTrack</title>
+    <title><?= sanitize($pageTitle ?? 'Dashboard') ?> — ClinIQ</title>
     <link rel="stylesheet" href="../css/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
 // ==============================================
-// MediTrack - Core JS (inlined to guarantee availability)
+// ClinIQ - Core JS (inlined to guarantee availability)
 // ==============================================
 
 function showToast(message, type, duration) {
@@ -164,10 +179,10 @@ document.addEventListener('DOMContentLoaded', function() {
     <aside class="sidebar">
         <div class="sidebar-brand">
             <div class="brand-icon-img">
-                <img src="../assets/logo.png" alt="MediTrack Logo" style="width:42px;height:42px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 6px rgba(45,212,191,0.5));border:2px solid rgba(45,212,191,0.3);">
+                <img src="../assets/logo.png" alt="ClinIQ Logo" style="width:42px;height:42px;object-fit:cover;border-radius:50%;border:2px solid var(--accent-a50);">
             </div>
             <div class="brand-text">
-                <span class="brand-name">MediTrack</span>
+                <span class="brand-name">ClinIQ</span>
                 <span class="brand-sub">Hospital OS</span>
             </div>
         </div>
@@ -184,16 +199,16 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="sidebar-footer">
             <div class="user-card">
                 <div class="profile-avatar">
-                    <img src="../assets/profile.png" alt="Profile"
+                    <img src="<?= avatarSrc($user['profile_image'] ?? null) ?>" alt="Profile"
                          style="width:38px;height:38px;object-fit:cover;border-radius:50%;
-                                border:2px solid rgba(99,135,255,0.45);
-                                box-shadow:0 0 10px rgba(99,135,255,0.3);">
+                                border:2px solid var(--accent-a50);
+                                ">
                 </div>
                 <div class="user-info">
                     <span class="user-name"><?= sanitize($user['name']) ?></span>
                     <span class="user-role"><?= $roleLabel ?></span>
                 </div>
-                <a href="/hospital_management/includes/logout.php" class="logout-btn" title="Logout">
+                <a href="../includes/logout.php" class="logout-btn" title="Logout">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 </a>
             </div>
@@ -220,8 +235,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
                         <span class="badge">3</span>
                     </button>
-                    <button class="icon-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+                    <button class="icon-btn theme-toggle" onclick="toggleTheme()" title="Switch theme" aria-label="Switch between light and dark mode">
+                        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
                     </button>
                 </div>
             </div>
