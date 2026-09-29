@@ -51,9 +51,10 @@ include __DIR__ . '/../includes/header.php';
         <div class="card">
             <div class="card-body" style="text-align:center;padding:32px 24px">
                 <div style="width:90px;height:90px;margin:0 auto 16px;position:relative">
-                    <img src="<?= avatarSrc($user['profile_image'] ?? null) ?>" alt="Profile"
+                    <img src="../assets/profile.png" alt="Profile"
                          style="width:90px;height:90px;object-fit:cover;border-radius:50%;
-                                border:3px solid var(--accent-a50)">
+                                border:3px solid rgba(99,135,255,0.4);
+                                box-shadow:0 0 20px rgba(99,135,255,0.2)">
                     <div style="position:absolute;bottom:2px;right:2px;width:18px;height:18px;
                                 background:var(--accent-green);border-radius:50%;
                                 border:2px solid var(--bg-card)"></div>
@@ -100,7 +101,9 @@ include __DIR__ . '/../includes/header.php';
             <div class="card-header"><span class="card-title">My Doctor</span></div>
             <div class="card-body">
                 <div style="display:flex;gap:12px;align-items:center">
-                    <?= userAvatar($myDoctor['profile_image'] ?? null) ?>
+                    <div class="avatar" style="background:linear-gradient(135deg,#3d6fff,#9b7bff)">
+                        <?= getInitials($myDoctor['name']) ?>
+                    </div>
                     <div>
                         <div style="font-weight:600;color:var(--text-primary);font-size:.9rem"><?= sanitize($myDoctor['name']) ?></div>
                         <div style="font-size:.75rem;color:var(--accent-blue-g)"><?= sanitize($myDoctor['specialty'] ?? '') ?></div>

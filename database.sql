@@ -33,6 +33,12 @@ CREATE TABLE IF NOT EXISTS tasks (
     status ENUM('pending', 'in_progress', 'completed', 'cancelled') DEFAULT 'pending',
     completed_at TIMESTAMP NULL DEFAULT NULL,
     notes TEXT DEFAULT NULL COMMENT 'Nurse notes on completion',
+    patient_ref VARCHAR(50) DEFAULT NULL COMMENT 'Patient # / room, for drug-interaction checks',
+    medication_name VARCHAR(150) DEFAULT NULL COMMENT 'Generic drug name (openFDA lookup)',
+    drug_warning TEXT DEFAULT NULL COMMENT 'Interaction flags found via openFDA',
+    calendar_event_id VARCHAR(255) DEFAULT NULL,
+    calendar_sync_status ENUM('none','synced','failed') NOT NULL DEFAULT 'none',
+    reminder_sent_at DATETIME DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (nurse_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -48,6 +54,29 @@ CREATE TABLE IF NOT EXISTS activity_log (
     ip_address VARCHAR(45) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Integration tables (Brevo email log, openFDA cache)
+CREATE TABLE IF NOT EXISTS notification_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    task_id INT DEFAULT NULL,
+    user_id INT DEFAULT NULL COMMENT 'recipient',
+    type ENUM('assigned','reminder','completed','cancelled') NOT NULL,
+    recipient VARCHAR(150) NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    message_id VARCHAR(255) DEFAULT NULL COMMENT 'Brevo messageId',
+    status ENUM('sent','delivered','failed','bounced') NOT NULL DEFAULT 'sent',
+    last_event VARCHAR(50) DEFAULT NULL,
+    error TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX (task_id), INDEX (status)
+);
+
+CREATE TABLE IF NOT EXISTS drug_cache (
+    drug_key VARCHAR(150) PRIMARY KEY,
+    payload MEDIUMTEXT NOT NULL,
+    fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- =============================================

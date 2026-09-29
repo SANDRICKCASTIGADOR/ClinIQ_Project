@@ -9,6 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/integrations.php';
 
 header('Content-Type: application/json');
 header('Cache-Control: no-cache');
@@ -89,6 +90,7 @@ switch ($action) {
             'task_date'        => $taskDate,
             'due_time'         => $dueTime,
         ]);
+        if (!empty($result['success']) && !empty($result['id'])) integ_task_created((int) $result['id']);
         echo json_encode($result);
         break;
 
@@ -109,7 +111,9 @@ switch ($action) {
             $nurseIds = array_map('intval', array_column($myNurses, 'id'));
             if (in_array((int)$input['nurse_id'], $nurseIds)) $data['nurse_id'] = (int)$input['nurse_id'];
         }
-        echo json_encode(updateTask($id, $data, $userId));
+        $res = updateTask($id, $data, $userId);
+        if (!empty($res['success']) && isset($data['status'])) integ_task_status_changed($id, $data['status']);
+        echo json_encode($res);
         break;
 
     case 'delete':
@@ -119,6 +123,9 @@ switch ($action) {
         }
         $id = (int)($input['id'] ?? 0);
         if (!$id) { echo json_encode(['success' => false, 'message' => 'Invalid task ID.']); exit; }
+        $own = getDB()->prepare("SELECT id FROM tasks WHERE id = ? AND doctor_id = ?");
+        $own->execute([$id, $userId]);
+        if ($own->fetch()) integ_task_deleting($id); // remove calendar event + notify nurse before row is gone
         echo json_encode(deleteTask($id, $userId));
         break;
 
@@ -134,7 +141,9 @@ switch ($action) {
             echo json_encode(['success' => false, 'message' => 'Invalid task ID or status.']);
             exit;
         }
-        echo json_encode(nurseUpdateTask($id, $status, $notes, $userId));
+        $res = nurseUpdateTask($id, $status, $notes, $userId);
+        if (!empty($res['success'])) integ_task_status_changed($id, $status);
+        echo json_encode($res);
         break;
 
     // Doctor updates nurse task progress (status + notes)
@@ -162,6 +171,7 @@ switch ($action) {
         $stmt = $db->prepare("UPDATE tasks SET status = ?, notes = ? $completedAt WHERE id = ?");
         $stmt->execute([$status, $notes, $id]);
         logActivity($userId, 'Task Progress Updated', "Task ID $id set to $status by doctor");
+        integ_task_status_changed($id, $status);
         echo json_encode(['success' => true]);
         break;
 

@@ -87,19 +87,19 @@ function currentUser(): array {
 
 function getAllUsers(): array {
     $db = getDB();
-    return $db->query("SELECT id, name, email, role, doctor_id, specialty, department, avatar_initials, profile_image, is_active, created_at FROM users ORDER BY role, name")->fetchAll();
+    return $db->query("SELECT id, name, email, role, doctor_id, specialty, department, avatar_initials, is_active, created_at FROM users ORDER BY role, name")->fetchAll();
 }
 
 function getUsersByRole(string $role): array {
     $db = getDB();
-    $stmt = $db->prepare("SELECT id, name, email, role, doctor_id, specialty, department, avatar_initials, profile_image, is_active, created_at FROM users WHERE role = ? ORDER BY name");
+    $stmt = $db->prepare("SELECT id, name, email, role, doctor_id, specialty, department, avatar_initials, is_active, created_at FROM users WHERE role = ? ORDER BY name");
     $stmt->execute([$role]);
     return $stmt->fetchAll();
 }
 
 function getNursesByDoctor(int $doctorId): array {
     $db = getDB();
-    $stmt = $db->prepare("SELECT id, name, email, department, avatar_initials, profile_image, is_active FROM users WHERE role = 'nurse' AND doctor_id = ? ORDER BY name");
+    $stmt = $db->prepare("SELECT id, name, email, department, avatar_initials, is_active FROM users WHERE role = 'nurse' AND doctor_id = ? ORDER BY name");
     $stmt->execute([$doctorId]);
     return $stmt->fetchAll();
 }
@@ -165,7 +165,7 @@ function deleteUser(int $id): array {
 
 function getTasksByNurse(int $nurseId, ?string $date = null): array {
     $db = getDB();
-    $sql = "SELECT t.*, u.name as doctor_name, u.profile_image as doctor_image FROM tasks t 
+    $sql = "SELECT t.*, u.name as doctor_name FROM tasks t 
             JOIN users u ON t.doctor_id = u.id 
             WHERE t.nurse_id = ?";
     $params = [$nurseId];
@@ -178,7 +178,7 @@ function getTasksByNurse(int $nurseId, ?string $date = null): array {
 
 function getTasksByDoctor(int $doctorId, ?string $date = null): array {
     $db = getDB();
-    $sql = "SELECT t.*, u.name as nurse_name, u.avatar_initials as nurse_initials, u.profile_image as nurse_image 
+    $sql = "SELECT t.*, u.name as nurse_name, u.avatar_initials as nurse_initials 
             FROM tasks t JOIN users u ON t.nurse_id = u.id 
             WHERE t.doctor_id = ?";
     $params = [$doctorId];
@@ -191,7 +191,7 @@ function getTasksByDoctor(int $doctorId, ?string $date = null): array {
 
 function getAllTasks(?string $date = null): array {
     $db = getDB();
-    $sql = "SELECT t.*, n.name as nurse_name, d.name as doctor_name, n.avatar_initials as nurse_initials, n.profile_image as nurse_image
+    $sql = "SELECT t.*, n.name as nurse_name, d.name as doctor_name, n.avatar_initials as nurse_initials
             FROM tasks t 
             JOIN users n ON t.nurse_id = n.id 
             JOIN users d ON t.doctor_id = d.id";
@@ -305,9 +305,8 @@ function getDashboardStats(string $role, int $userId): array {
 
 function getRecentActivity(int $limit = 10): array {
     $db = getDB();
-    $stmt = $db->prepare("SELECT al.*, u.name, u.role, u.avatar_initials, u.profile_image FROM activity_log al JOIN users u ON al.user_id = u.id ORDER BY al.created_at DESC LIMIT :lim");
-    $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
-    $stmt->execute();
+    $stmt = $db->prepare("SELECT al.*, u.name, u.role, u.avatar_initials FROM activity_log al JOIN users u ON al.user_id = u.id ORDER BY al.created_at DESC LIMIT ?");
+    $stmt->execute([$limit]);
     return $stmt->fetchAll();
 }
 
@@ -318,31 +317,6 @@ function logActivity(int $userId, string $action, string $details = ''): void {
         $db->prepare("INSERT INTO activity_log (user_id, action, details, ip_address) VALUES (?,?,?,?)")
            ->execute([$userId, $action, $details, $ip]);
     } catch (Exception $e) { /* silent fail */ }
-}
-
-// --------------------------------------------------
-// Avatar / Profile Picture
-// --------------------------------------------------
-// Every user shows a picture. If the account has no uploaded photo,
-// it falls back to the same default image the admin uses
-// (assets/profile.png), so the interface never shows a blank circle.
-
-define('DEFAULT_AVATAR', 'profile.png');
-
-function avatarSrc(?string $image = null, string $base = '../'): string {
-    $image = trim((string) $image);
-    if ($image !== '' && file_exists(__DIR__ . '/../assets/uploads/' . $image)) {
-        return $base . 'assets/uploads/' . rawurlencode($image);
-    }
-    return $base . 'assets/' . DEFAULT_AVATAR;
-}
-
-function userAvatar(?string $image = null, string $size = '', string $style = '', string $base = '../'): string {
-    $cls = trim('avatar ' . $size);
-    $st  = $style ? ' style="' . htmlspecialchars($style, ENT_QUOTES) . '"' : '';
-    return '<div class="' . $cls . '"' . $st . '>'
-         . '<img src="' . htmlspecialchars(avatarSrc($image, $base), ENT_QUOTES) . '" alt="Profile">'
-         . '</div>';
 }
 
 // --------------------------------------------------

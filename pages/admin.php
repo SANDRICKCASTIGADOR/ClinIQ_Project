@@ -186,7 +186,7 @@ include __DIR__ . '/../includes/header.php';
             $ts = $db->prepare("SELECT COUNT(*) FROM tasks WHERE doctor_id=?"); $ts->execute([$doc['id']]); $tc = $ts->fetchColumn();
         ?>
         <div class="doctor-card">
-            <?= userAvatar($doc['profile_image'] ?? null, 'lg') ?>
+            <div class="avatar lg"><?= sanitize($doc['avatar_initials'] ?? 'DR') ?></div>
             <div class="doctor-card-info">
                 <div class="doctor-card-name"><?= sanitize($doc['name']) ?></div>
                 <div class="doctor-card-spec"><?= sanitize($doc['specialty'] ?? 'General') ?></div>
@@ -223,7 +223,7 @@ include __DIR__ . '/../includes/header.php';
                 <tr data-searchable>
                     <td>
                         <div class="flex align-center gap-12">
-                            <?= userAvatar($doc['profile_image'] ?? null, 'sm') ?>
+                            <div class="avatar sm"><?= sanitize($doc['avatar_initials']) ?></div>
                             <div>
                                 <div class="table-name"><?= sanitize($doc['name']) ?></div>
                                 <div class="table-sub"><?= sanitize($doc['email']) ?></div>
@@ -269,7 +269,7 @@ include __DIR__ . '/../includes/header.php';
                 <tr data-searchable>
                     <td>
                         <div class="flex align-center gap-12">
-                            <?= userAvatar($nurse['profile_image'] ?? null, 'sm') ?>
+                            <div class="avatar sm" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)"><?= sanitize($nurse['avatar_initials']) ?></div>
                             <div>
                                 <div class="table-name"><?= sanitize($nurse['name']) ?></div>
                                 <div class="table-sub"><?= sanitize($nurse['email']) ?></div>
@@ -315,7 +315,7 @@ include __DIR__ . '/../includes/header.php';
                     </td>
                     <td>
                         <div class="flex align-center gap-8">
-                            <?= userAvatar($t['nurse_image'] ?? null, 'sm') ?>
+                            <div class="avatar sm" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)"><?= sanitize($t['nurse_initials']) ?></div>
                             <?= sanitize($t['nurse_name']) ?>
                         </div>
                     </td>
@@ -349,7 +349,7 @@ include __DIR__ . '/../includes/header.php';
                 <tr data-searchable>
                     <td>
                         <div class="flex align-center gap-8">
-                            <?= userAvatar($act['profile_image'] ?? null, 'sm') ?>
+                            <div class="avatar sm"><?= sanitize($act['avatar_initials'] ?? 'U') ?></div>
                             <?= sanitize($act['name']) ?>
                         </div>
                     </td>
